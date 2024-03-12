@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <p>Hello World</p>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const p = document.createElement('p');
+      const updateTime = () => {
+        const now = new Date();
+        p.textContent = `Current time: ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      };
+      updateTime();
+      setInterval(updateTime, 1000);
+      document.body.appendChild(p);
+    });
+  </script>
+
+  <script>
+    let workTime = 25 * 60;
+    let breakTime = 5 * 60;
+    let isWorking = true;
+    let timerId;
+
+    const timerElement = document.createElement('p');
+    document.body.appendChild(timerElement);
+
+    const updateTimer = () => {
+      const time = isWorking ? workTime : breakTime;
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timerElement.textContent = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    const startTimer = () => {
+      if (timerId) return;
+      timerId = setInterval(() => {
+        if (isWorking) {
+          if (workTime > 0) {
+            workTime--;
+          } else {
+            isWorking = false;
+            workTime = 25 * 60;
+          }
+        } else {
+          if (breakTime > 0) {
+            breakTime--;
+          } else {
+            isWorking = true;
+            breakTime = 5 * 60;
+          }
+        }
+        updateTimer();
+      }, 1000);
+    };
+
+    const stopTimer = () => {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    };
+
+    const startButton = document.createElement('button');
+    startButton.textContent = 'Start';
+    startButton.addEventListener('click', startTimer);
+    document.body.appendChild(startButton);
+
+    const stopButton = document.createElement('button');
+    stopButton.textContent = 'Stop';
+    stopButton.addEventListener('click', stopTimer);
+    document.body.appendChild(stopButton);
+
+    updateTimer();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+
+    const drawTimer = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const time = isWorking ? workTime : breakTime;
+      const total = isWorking ? 25 * 60 : 5 * 60;
+      const ratio = time / total;
+
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, 80, -0.5 * Math.PI, (-0.5 + 2 * ratio) * Math.PI);
+      ctx.lineWidth = 20;
+      ctx.strokeStyle = isWorking ? 'green' : 'red';
+      ctx.stroke();
+    };
+
+    setInterval(drawTimer, 1000);
+
+</script>
+
+</body>
+</html>
